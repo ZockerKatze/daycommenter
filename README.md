@@ -41,4 +41,4 @@ The application uses **Tkinter** for its graphical user interface and stores cal
 1. Clone this repository or copy the program code.
 2. Run the Python script:
    ```bash
-   python calendar_app.py
+   python(3) main.py
