@@ -1,3 +1,5 @@
+## ik, the programm stores json data kinda unreadable and is kinda inefficient but i threw this together at fucking 3am or somehtin
+
 import tkinter as tk
 from tkinter import simpledialog
 from calendar import monthcalendar, month_name
