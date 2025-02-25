@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QDir>
 #include <QMessageBox>
+#include <QTextEdit>
 
 CalendarApp::CalendarApp(QWidget* parent) : QWidget(parent) {
     setWindowTitle("Calendar");
@@ -22,12 +23,13 @@ CalendarApp::CalendarApp(QWidget* parent) : QWidget(parent) {
     QPushButton* editButton = new QPushButton("Add/Edit Note", this);
     mainLayout->addWidget(editButton);
 
-    connect(calendar, &QCalendarWidget::clicked, this, &CalendarApp::onDateSelected);
+    connect(calendar, &QCalendarWidget::selectionChanged, this, &CalendarApp::onDateSelected);
     connect(editButton, &QPushButton::clicked, this, &CalendarApp::openNoteDialog);
 }
 
-void CalendarApp::onDateSelected(const QDate& date) {
-    selectedDate = date;
+void CalendarApp::onDateSelected() {
+    selectedDate = calendar->selectedDate();
+    loadNoteData(selectedDate);  // This will load the note for the selected date
 }
 
 void CalendarApp::openNoteDialog() {
@@ -49,6 +51,9 @@ void CalendarApp::openNoteDialog() {
     layout->addWidget(colorButton);
     layout->addWidget(saveButton);
 
+    // Load the note when opening the dialog
+    loadNoteData(selectedDate, noteText);
+
     connect(colorButton, &QPushButton::clicked, [&]() {
         QColor color = QColorDialog::getColor(Qt::white, this);
         if (color.isValid()) {
@@ -64,7 +69,31 @@ void CalendarApp::openNoteDialog() {
     noteDialog.exec();
 }
 
+void CalendarApp::loadNoteData(const QDate& date, QTextEdit* noteText) {
+    // Make sure the QTextEdit pointer is valid before accessing it
+    if (!noteText) return;
+
+    QDir dir("calendar_data");
+    if (!dir.exists()) return;
+
+    QFile file("calendar_data/" + date.toString("yyyy-MM") + ".json");
+    if (!file.exists()) return;
+
+    if (file.open(QIODevice::ReadOnly)) {
+        QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+        QJsonObject jsonData = doc.object();
+        file.close();
+
+        QString dayNote = jsonData.value(date.toString("dd")).toString();
+        if (!dayNote.isEmpty()) {
+            noteText->setPlainText(dayNote);  // Set the note in the QTextEdit
+        }
+    }
+}
+
 void CalendarApp::saveNoteData(const QDate& date, const QString& text) {
+    if (!date.isValid()) return;  // Early return if the date is not valid
+
     QDir dir("calendar_data");
     if (!dir.exists()) dir.mkpath(".");
 
@@ -91,4 +120,3 @@ int main(int argc, char* argv[]) {
     window.show();
     return app.exec();
 }
-

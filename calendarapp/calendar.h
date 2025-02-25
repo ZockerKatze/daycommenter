@@ -15,9 +15,10 @@ public:
     explicit CalendarApp(QWidget* parent = nullptr);
 
 private slots:
-    void onDateSelected(const QDate& date);
+    void onDateSelected();
     void openNoteDialog();
     void saveNoteData(const QDate& date, const QString& text);
+    void loadNoteData(const QDate& date, QTextEdit* noteText = nullptr);
 
 private:
     QCalendarWidget* calendar;
@@ -25,4 +26,3 @@ private:
 };
 
 #endif // CALENDARAPP_H
-
