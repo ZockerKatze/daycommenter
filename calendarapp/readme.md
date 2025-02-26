@@ -1,6 +1,6 @@
 # CalendarApp
 
-A simple Qt5-based Calendar application with note-taking functionality.
+A simple Qt5-based Calendar application with note-taking functionality , This is a imporved version on the TkInter App , it runs within C++
 
 ## Features
 - Interactive calendar view
